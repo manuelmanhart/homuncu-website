@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homuncu PI — Your Ghost in a PI</title>
+  <link rel="icon" type="image/jpeg" href="img/logo.jpg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="/img/favicon.png" sizes="32x32"/>
+  <link rel="icon" type="image/svg+xml" href="/img/favicon.svg"/>
+  <link rel="shortcut icon" href="/img/favicon.ico"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png"/>
+
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <img src="img/logo.jpg" alt="Homuncu PI">
+        <span>Homuncu PI</span>
+      </a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#features">Features</a>
+        <a href="#download">Download</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-bg-ghost"></div>
+    <div class="hero-content">
+      <img src="img/logo.jpg" alt="Homuncu PI Logo" class="hero-logo">
+      <h1>Your Ghost in a PI</h1>
+      <p class="hero-tagline">Plug & Play Home Automation<br>for your Raspberry Pi</p>
+      <div class="hero-cta">
+        <a href="#download" class="btn btn-primary">Download</a>
+        <a href="#about" class="btn btn-secondary">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="section about">
+    <div class="container">
+      <h2 class="section-title">What is Homuncu PI?</h2>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>Homuncu PI is a lightweight, modular home automation middleware that runs on <strong>any Raspberry Pi</strong> — from the original Pi 1 to the latest Pi 5. It bridges your IoT hardware to <strong>Home Assistant</strong> (or any MQTT broker) with zero hassle.</p>
+          <p>Just connect your sensors, configure a YAML file, and you are up and running. No cloud, no bloat, just your Pi doing what it does best.</p>
+          <div class="about-meta">
+            <span class="tag">Python</span>
+            <span class="tag">Bash</span>
+            <span class="tag">MQTT</span>
+            <span class="tag">Raspberry Pi</span>
+          </div>
+        </div>
+        <div class="about-highlights">
+          <div class="highlight-card">
+            <span class="highlight-icon">&#x1F7E2;</span>
+            <span class="highlight-label">Plug & Play</span>
+          </div>
+          <div class="highlight-card">
+            <span class="highlight-icon">&#x2699;&#xFE0F;</span>
+            <span class="highlight-label">Modular</span>
+          </div>
+          <div class="highlight-card">
+            <span class="highlight-icon">&#x1F310;</span>
+            <span class="highlight-label">MQTT</span>
+          </div>
+          <div class="highlight-card">
+            <span class="highlight-icon">&#x1F4E1;&#xFE0F;</span>
+            <span class="highlight-label">Lightweight</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="section features">
+    <div class="container">
+      <h2 class="section-title">What can it do?</h2>
+      <p class="section-subtitle">A growing set of modular services — just enable what you need.</p>
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F3F3;&#xFE0F;</div>
+          <h3>Binary Sensors</h3>
+          <p>Reed switches, PIR motion detectors — detect open windows, doors, or intruders.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4F7;</div>
+          <h3>Camera</h3>
+          <p>Connect a Pi Camera and see what is going on — even when you are not home.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F50D;</div>
+          <h3>Healthcheck</h3>
+          <p>Monitor CPU temperature, memory, disk usage, and overall Pi health.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F310;</div>
+          <h3>IP Address</h3>
+          <p>Feed a DNS server like Unbound with current hostname & IP combos — no more stale DHCP addresses.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4A1;</div>
+          <h3>LED & WLED</h3>
+          <p>Control WS2812 LED strips or WLED devices via MQTT — light up your home.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F3B5;</div>
+          <h3>Squeezebox / Multiroom</h3>
+          <p>Multiroom audio with Squeezelite — everyone listens to their own music.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F321;&#xFE0F;</div>
+          <h3>Temperature & Humidity</h3>
+          <p>DHT22 / DHT11 / AM2302 support — track your environment with configurable polling.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4CB;</div>
+          <h3>RFID Reader</h3>
+          <p>Read RFID tags and trigger actions — perfect for access control or an audiobook player for kids.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F504;</div>
+          <h3>Readonly Mode</h3>
+          <p>Make your Pi resilient to power outages by running the filesystem read-only.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4E6;</div>
+          <h3>OTA Updates</h3>
+          <p>Stay up to date — the built-in update service checks for new versions automatically.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section arch">
+    <div class="container">
+      <h2 class="section-title">How it works</h2>
+      <div class="arch-steps">
+        <div class="arch-step">
+          <div class="step-number">1</div>
+          <h3>Connect Hardware</h3>
+          <p>Wire your sensors to the GPIO pins — DHT22, PIR, reed switch, RFID, camera, etc.</p>
+        </div>
+        <div class="arch-arrow">&#x2192;</div>
+        <div class="arch-step">
+          <div class="step-number">2</div>
+          <h3>Configure</h3>
+          <p>Edit <code>config.yaml</code> — enable the services you need, set pins and intervals.</p>
+        </div>
+        <div class="arch-arrow">&#x2192;</div>
+        <div class="arch-step">
+          <div class="step-number">3</div>
+          <h3>Run</h3>
+          <p>Execute <code>./run.sh</code> — Homuncu PI starts, discovers services, and publishes to MQTT.</p>
+        </div>
+        <div class="arch-arrow">&#x2192;</div>
+        <div class="arch-step">
+          <div class="step-number">4</div>
+          <h3>Automate</h3>
+          <p>Home Assistant subscribes to the MQTT topics and you are done — full home automation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="download" class="section download">
+    <div class="container">
+      <h2 class="section-title">Download</h2>
+      <p class="section-subtitle">Get the latest Homuncu PI release for your Raspberry Pi.</p>
+
+      <div class="download-tabs">
+        <button class="tab-btn active" data-tab="stable">Stable</button>
+        <button class="tab-btn" data-tab="dev">Dev Build</button>
+      </div>
+
+      <div id="tab-stable" class="tab-content active">
+        <div class="release-card">
+          <div class="release-badge stable">Stable</div>
+          <div class="release-version" id="stable-version">Loading...</div>
+          <p class="release-info">Battle-tested releases recommended for production use.</p>
+          <p>The easiest way to install is following command in your Raspberry Pi terminal:</p>
+          <pre class="code"><code>wget https://homuncu-pi.manhart.space/dl/stable/installer.sh -O - | sh</code></pre>
+          <p>Alternatively, you can download the archive yourself and put it on your raspberry yourself:</p>
+          <a href="#" class="btn btn-primary download-btn" id="stable-download-btn">
+            Download Stable tar
+          </a>
+          <p class="release-note">SHA256: <code id="stable-sha256">—</code></p>
+        </div>
+      </div>
+
+      <div id="tab-dev" class="tab-content">
+        <div class="release-card dev">
+          <div class="release-badge dev">Dev</div>
+          <div class="release-version" id="dev-version">Loading...</div>
+          <p class="release-info">Latest developments — may be experimental, includes newest features.</p>
+          <p>The easiest way to install is following command in your Raspberry Pi terminal:</p>
+          <pre class="code"><code>wget https://homuncu-pi.manhart.space/dl/dev/installer.sh -O - | sh</code></pre>
+          <p>Alternatively, you can download the archive yourself and put it on your raspberry yourself:</p>
+          <a href="#" class="btn btn-secondary download-btn" id="dev-download-btn">
+            Download Dev Build tar
+          </a>
+          <p class="release-note">SHA256: <code id="dev-sha256">—</code></p>
+        </div>
+      </div>
+
+      <div class="update-info">
+        <h3>Update Service / Automatic updates</h3>
+        <p>Homuncu PI comes with a built-in update service. Configure your <code>config.yaml</code>:</p>
+        <pre class="code"><code>update:
+  active: True
+  type: stable
+  autoupdate: True
+</code></pre>
+        <p>The service periodically checks for new versions and if autoupdate is set to True it keeps your Pi (and Homuncu itself) up to date.</p>
+        <p>If you like to have more control over when an update is applied, set autoupdate to False and send it an MQTT message like this:</p>
+        <pre class="code"><code>topic:
+  home/raspi
+  hostname: $HOSTNAME
+  message: { update: "now" }
+</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section contact">
+    <div class="container">
+      <h2 class="section-title">Get in Touch</h2>
+      <div class="contact-links">
+        <a href="https://github.com/manuelmanhart/homuncu-pi" class="contact-card">
+          <span class="contact-icon">&#x1F4C1;</span>
+          <span>Source Code</span>
+        </a>
+        <a href="https://github.com/manuelmanhart/homuncu-pi/issues" class="contact-card">
+          <span class="contact-icon">&#x1F41B;</span>
+          <span>Report Issue</span>
+        </a>
+        <a href="https://linkedin.com/in/manuel-manhart" class="contact-card">
+          <span class="contact-icon">&#x1F465;</span>
+          <span>LinkedIn</span>
+        </a>
+        <a href="mailto:manuel.manhart@gmail.com" class="contact-card">
+          <span class="contact-icon">&#x2709;&#xFE0F;</span>
+          <span>Email</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Manuel Manhart IT e.U. &mdash; MIT License</p>
+      <p class="footer-ghost">&#x1F47B; Homuncu PI &mdash; Your Ghost in a PI</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
