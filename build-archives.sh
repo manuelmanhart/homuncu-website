@@ -43,24 +43,35 @@ mkdir -p "$TARGET_DIR"
 ARCHIVE_PATH="$TARGET_DIR/$ARCHIVE_NAME"
 
 echo "[INFO] Building $ARCHIVE_NAME ..."
+
+TEMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TEMP_DIR"' EXIT
+
 if command -v git &>/dev/null && [ -d "$PI_DIR/.git" ]; then
   cd "$PI_DIR"
-  git archive --format=tar.gz -o "$ARCHIVE_PATH" HEAD
+  git archive --format=tar HEAD | tar -x -C "$TEMP_DIR"
   echo "[INFO] Created from git HEAD"
 else
   cd "$PI_DIR"
   if [ -d "$PI_DIR/.git" ]; then
     echo "[WARN] git found but no .git? creating from directory..."
   fi
-  tar -czf "$ARCHIVE_PATH" \
+  tar -c -f - \
     --exclude='.git' \
     --exclude='__pycache__' \
     --exclude='venv' \
     --exclude='*.pyc' \
     --exclude='.DS_Store' \
-    .
+    . | tar -x -C "$TEMP_DIR"
   echo "[INFO] Created from directory"
 fi
+
+# Append timestamp to VERSION inside archive for dev builds
+if [ "$CHANNEL" == "dev" ]; then
+  echo "${VERSION}-${TIMESTAMP}" > "$TEMP_DIR/VERSION"
+fi
+
+tar -czf "$ARCHIVE_PATH" -C "$TEMP_DIR" .
 
 # --- Checksum (relative filename inside, so archive can be moved) ---
 cd "$TARGET_DIR"

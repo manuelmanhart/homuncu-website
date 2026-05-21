@@ -1,5 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+  /* ====== Replace {{base_url}} placeholders with current origin ====== */
+
+  document.body.innerHTML = document.body.innerHTML.replace(
+    /\{\{base_url\}\}/g,
+    window.location.origin
+  );
+
   /* ====== Tab Switching ====== */
 
   const tabBtns = document.querySelectorAll('.tab-btn');
