@@ -2,7 +2,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PI_DIR="$PROJECT_ROOT/homuncu-pi"
 DL_DIR="$SCRIPT_DIR"
 
@@ -21,10 +21,8 @@ if [ -n "$HOMUNCU_PI_DIR" ]; then
   PI_DIR="$HOMUNCU_PI_DIR"
 fi
 
-# --- Read version ---
 VERSION=$(cat "$PI_DIR/VERSION" | tr -d '[:space:]')
-echo "[INFO] Homuncu PI version: $VERSION"
-
+# --- Read version ---
 # --- Determine channel ---
 if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   CHANNEL="stable"
@@ -35,7 +33,10 @@ else
   TIMESTAMP=$(date +%Y%m%d%H%M%S)
   ARCHIVE_NAME="homuncu-pi-${VERSION}-${TIMESTAMP}.tar.gz"
   echo "[INFO] Detected dev build  (timestamp: $TIMESTAMP)"
+  VERSION=$(echo "${VERSION}-${TIMESTAMP}")
 fi
+
+echo "[INFO] Homuncu PI version: $VERSION"
 
 # --- Build archive ---
 TARGET_DIR="$DL_DIR/$CHANNEL"
@@ -46,10 +47,11 @@ echo "[INFO] Building $ARCHIVE_NAME ..."
 
 TEMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TEMP_DIR"' EXIT
+mkdir -p "$TEMP_DIR/homuncu-pi"
 
 if command -v git &>/dev/null && [ -d "$PI_DIR/.git" ]; then
   cd "$PI_DIR"
-  git archive --format=tar HEAD | tar -x -C "$TEMP_DIR"
+  git archive --format=tar HEAD | tar -x -C "$TEMP_DIR/homuncu-pi"
   echo "[INFO] Created from git HEAD"
 else
   cd "$PI_DIR"
@@ -62,16 +64,16 @@ else
     --exclude='venv' \
     --exclude='*.pyc' \
     --exclude='.DS_Store' \
-    . | tar -x -C "$TEMP_DIR"
+    . | tar -x -C "$TEMP_DIR/homuncu-pi"
   echo "[INFO] Created from directory"
 fi
 
 # Append timestamp to VERSION inside archive for dev builds
 if [ "$CHANNEL" == "dev" ]; then
-  echo "${VERSION}-${TIMESTAMP}" > "$TEMP_DIR/VERSION"
+  echo "${VERSION}" > "$TEMP_DIR/homuncu-pi/VERSION"
 fi
 
-tar -czf "$ARCHIVE_PATH" -C "$TEMP_DIR" .
+tar -czf "$ARCHIVE_PATH" -C "$TEMP_DIR" homuncu-pi
 
 # --- Checksum (relative filename inside, so archive can be moved) ---
 cd "$TARGET_DIR"
@@ -80,9 +82,6 @@ echo "[INFO] SHA256: $(cut -d' ' -f1 < "$ARCHIVE_NAME.sha256")"
 
 # --- Write VERSION file (clean version without timestamp) ---
 echo "$VERSION" > "$TARGET_DIR/VERSION"
-
-# --- Write LATEST file (so update_service.py finds the exact archive name) ---
-echo "$ARCHIVE_NAME" > "$TARGET_DIR/LATEST"
 
 # --- Update root VERSION only for stable ---
 if [ "$CHANNEL" == "stable" ]; then
@@ -103,7 +102,6 @@ if [ -n "$HOMUNCU_SERVER" ] && [ -n "$HOMUNCU_REMOTE_DIR" ]; then
   scp "$ARCHIVE_PATH"            "${REMOTE_PATH}/${CHANNEL}/"
   scp "$ARCHIVE_PATH.sha256"     "${REMOTE_PATH}/${CHANNEL}/"
   scp "$TARGET_DIR/VERSION"      "${REMOTE_PATH}/${CHANNEL}/"
-  scp "$TARGET_DIR/LATEST"       "${REMOTE_PATH}/${CHANNEL}/"
 
   if [ "$CHANNEL" == "stable" ]; then
     scp "$DL_DIR/VERSION"        "${REMOTE_PATH}/"

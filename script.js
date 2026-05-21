@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (shaEl) shaEl.textContent = '\u2014';
 
-    const version = await fetchText(`${DL_BASE}/${channel}/LATEST`);
+    const version = await fetchText(`${DL_BASE}/${channel}/VERSION`);
     if (!version) {
       versionEl.textContent = 'Not available';
       return;
@@ -65,13 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     versionEl.textContent = `v${version}`;
 
-    // Stable: predictable name; Dev: needs LATEST file (timestamp in filename)
-    let archiveName;
-    if (channel === 'stable') {
-      archiveName = `homuncu-pi-${version}.tar.gz`;
-    } else {
-      archiveName = await fetchText(`${DL_BASE}/${channel}/LATEST`);
-    }
+    let archiveName = `homuncu-pi-${version}.tar.gz`;
 
     if (downloadBtn && archiveName) {
       downloadBtn.setAttribute('href', getArchiveUrl(channel, archiveName));
