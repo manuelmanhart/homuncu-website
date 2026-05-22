@@ -15,8 +15,7 @@ It serves two purposes:
 ├── index.html                  # Landing page
 ├── style.css                   # Green, playful theme
 ├── script.js                   # Tab switching, live version fetch
-├── nginx-example.conf          # Example Nginx configuration
-├── VERSION                     # Latest stable version (update_service.py default)
+├── VERSION                     # Latest version (update_service.py default)
 ├── build-archives.sh           # Build script for creating & uploading archives
 ├── .env.example                # Template for SCP upload configuration
 ├── .gitignore                  # Ignores .env (local credentials)
@@ -27,10 +26,8 @@ It serves two purposes:
 ├── dl/
 │   ├── stable/                 # Stable release channel
 │   │   ├── VERSION             # e.g. "1.0.0"
-│   │   ├── LATEST              # Archive filename of the latest stable release
-│   └── dev/                    # Dev release channel
-│       ├── VERSION             # e.g. "1.1.0-dev"
-│       ├── LATEST              # Archive filename (with timestamp, e.g. 
+   # Dev release channel
+│       ├── VERSION             # e.g. "1.1.0-dev-20260527101500"
 ```
 
 ---
@@ -80,9 +77,8 @@ This will:
 2. Detect whether it is a **stable** (`x.y.z`) or **dev** (contains suffix) release
 3. Build a `.tar.gz` archive via `git archive HEAD`
 4. Generate a SHA256 checksum
-5. Write `VERSION` and `LATEST` files into the appropriate channel directory
-6. For stable releases, also update the root `VERSION` file
-7. Upload everything to the configured server via SCP
+5. Write `VERSION` file into the appropriate channel directory
+6. Upload everything to the configured server via SCP
 
 ---
 
@@ -100,8 +96,7 @@ The `update_service.py` on each Raspberry Pi uses this site as its update source
 
 1. `update_service.py` fetches `{repoUrl}/{type}/VERSION` and compares it with the local `VERSION` file
 2. If a newer version is found and `autoupdate` permits it:
-   - **Stable**: constructs the archive URL from the version (`homuncu-pi-{version}.tar.gz`)
-   - **Dev**: fetches `{repoUrl}/{type}/LATEST` to get the exact archive filename (with timestamp)
+   - constructs the archive URL from the version (`homuncu-pi-{version}.tar.gz`)
 3. Downloads the archive, verifies integrity, and extracts it to the project root
 4. Preserves `config.yaml` and `venv/` during extraction
 5. Logs a recommendation to restart the service

@@ -1,2 +1,3 @@
-/dl/*
+/dl/dev/*
+/dl/stable/*
 **/.env
