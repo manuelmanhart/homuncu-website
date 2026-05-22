@@ -353,6 +353,28 @@ YAML
 YAML
     fi
 
+    # --- Camera ---
+    echo -e "\n${BOLD}${BLUE}┌─ Kamera (Raspberry Pi / libcamera) ────────────────┐${NC}"
+    if confirm "Kamera-Service aktivieren?" "n"; then
+        _v=$(read_section_value "$cfg" "camera" "resolution" | tr -d '[] ' || true)
+        ask "  Auflösung (Breite,Höhe)" "${_v:-1920,1080}" CAM_RES
+        _v=$(read_section_value "$cfg" "camera" "quality");   ask "  JPEG-Qualität (1-100)"     "${_v:-85}"                CAM_QUALITY
+        _v=$(read_section_value "$cfg" "camera" "storagePath"); ask "  Speicherpfad"            "${_v:-/tmp/camera}"       CAM_PATH
+        _v=$(read_section_value "$cfg" "camera" "mqttTopic"); ask "  MQTT-Topic"                "${_v:-camera}"            CAM_TOPIC
+        _v=$(read_section_value "$cfg" "camera" "mqttFlags"); ask "  MQTT-Flags"                "${_v:-ADD_BASE_TOPIC,ADD_HOSTNAME,ADD_TIMESTAMP}" CAM_FLAGS
+
+        CAM_RES=$(echo "$CAM_RES" | tr -d ' ')
+        cat >> "$CONFIG_FILE" <<YAML
+  camera:
+    active: True
+    resolution: [${CAM_RES%,*}, ${CAM_RES#*,}]
+    quality: $CAM_QUALITY
+    storagePath: "${CAM_PATH}"
+    mqttTopic: "${CAM_TOPIC}"
+    mqttFlags: "${CAM_FLAGS}"
+YAML
+    fi
+
     log "Konfiguration erstellt: ${BOLD}$CONFIG_FILE${NC}"
 }
 
