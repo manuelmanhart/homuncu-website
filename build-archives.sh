@@ -49,13 +49,15 @@ TEMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TEMP_DIR"' EXIT
 mkdir -p "$TEMP_DIR/homuncu-pi"
 
-if command -v git &>/dev/null && [ -d "$PI_DIR/.git" ]; then
+if [ "$CHANNEL" != "dev" ] && command -v git &>/dev/null && [ -d "$PI_DIR/.git" ]; then
   cd "$PI_DIR"
   git archive --format=tar HEAD | tar -x -C "$TEMP_DIR/homuncu-pi"
   echo "[INFO] Created from git HEAD"
 else
   cd "$PI_DIR"
-  if [ -d "$PI_DIR/.git" ]; then
+  if [ "$CHANNEL" == "dev" ]; then
+    echo "[INFO] creating dev version from directory"
+  elif [ -d "$PI_DIR/.git" ]; then
     echo "[WARN] git found but no .git? creating from directory..."
   fi
   tar -c -f - \
