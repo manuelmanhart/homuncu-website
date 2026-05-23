@@ -237,13 +237,13 @@ extract_archive() {
             cp "$CONFIG_FILE" "$TMPDIR/config.yaml.bak"
             log "Bestehende config.yaml gesichert"
         fi
-        rm -rf "$INSTALL_DIR"
-        log "Altes Verzeichnis entfernt."
+        find "$INSTALL_DIR" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+        log "Altes Verzeichnis geleert."
     else
         if [ -d "$INSTALL_DIR" ]; then
             if confirm "'$INSTALL_DIR' existiert bereits. Überschreiben?" "n"; then
-                rm -rf "$INSTALL_DIR"
-                log "Altes Verzeichnis entfernt."
+                find "$INSTALL_DIR" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+                log "Altes Verzeichnis geleert."
             else
                 warn "Installation abgebrochen."
                 exit 1
