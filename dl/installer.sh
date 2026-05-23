@@ -28,6 +28,11 @@ confirm() {
 cleanup() { [ -n "${TMPDIR:-}" ] && rm -rf "$TMPDIR" 2>/dev/null; }
 trap cleanup EXIT
 
+UPDATE_MODE=false
+LOCAL_VERSION=""
+CONFIG_CHOICE="keep"
+CONFIG_FILE=""
+
 DOWNLOADER=""
 detect_downloader() {
     if command -v wget &>/dev/null; then
@@ -179,19 +184,73 @@ get_install_dir() {
         ask "Installationsverzeichnis" "$default_dir" INSTALL_DIR
     fi
     INSTALL_DIR="${INSTALL_DIR%/}"
+    CONFIG_FILE="$INSTALL_DIR/config.yaml"
+}
+
+check_existing_installation() {
+    if [ -f "$INSTALL_DIR/VERSION" ]; then
+        UPDATE_MODE=true
+        LOCAL_VERSION=$(cat "$INSTALL_DIR/VERSION" | tr -d '[:space:]')
+
+        echo ""
+        echo -e "${BOLD}${YELLOW}╔══════════════════════════════════════════════════════╗${NC}"
+        echo -e "${BOLD}${YELLOW}║        Bestehende Installation gefunden              ║${NC}"
+        echo -e "${BOLD}${YELLOW}╚══════════════════════════════════════════════════════╝${NC}"
+        echo -e "  Installierte Version: ${BOLD}$LOCAL_VERSION${NC}"
+        echo -e "  Remote Version:       ${BOLD}$REMOTE_VERSION${NC}"
+        echo ""
+
+        if [ "$LOCAL_VERSION" = "$REMOTE_VERSION" ]; then
+            warn "Die installierte Version entspricht der Remote-Version."
+            if ! confirm "Trotzdem fortfahren (Neuinstallation)?" "n"; then
+                log "Update abgebrochen."
+                exit 0
+            fi
+        fi
+
+        echo -e "\n${BOLD}${BLUE}┌─ Konfigurations-Upgrade ─────────────────────────────┐${NC}"
+        echo -e "  ${YELLOW}Wie möchtest du mit der bestehenden Konfiguration verfahren?${NC}"
+        echo -e "  ${BOLD}1${NC}) Bestehende Konfiguration behalten"
+        echo -e "  ${BOLD}2${NC}) Neue Konfiguration erstellen (Wizard neu durchlaufen)"
+        echo -e "  ${BOLD}3${NC}) Nur neue Optionen abfragen ${YELLOW}(noch nicht implementiert)${NC}"
+        local choice
+        read -r -p "$(echo -e "${CYAN}?>${NC} Auswahl [1/2/3]: ")" choice </dev/tty || true
+        case "$choice" in
+            2)
+                CONFIG_CHOICE="rewrite"
+                log "Konfiguration wird neu erstellt."
+                ;;
+            *)
+                CONFIG_CHOICE="keep"
+                log "Bestehende Konfiguration wird behalten."
+                ;;
+        esac
+    fi
 }
 
 extract_archive() {
     header "Archiv wird extrahiert"
-    if [ -d "$INSTALL_DIR" ]; then
-        if confirm "'$INSTALL_DIR' existiert bereits. Überschreiben?" "n"; then
-            rm -rf "$INSTALL_DIR"
-            log "Altes Verzeichnis entfernt."
-        else
-            warn "Installation abgebrochen."
-            exit 1
+
+    if [ "$UPDATE_MODE" = true ]; then
+        log "Update-Modus: Bestehende Installation wird aktualisiert"
+        if [ -f "$CONFIG_FILE" ]; then
+            cp "$CONFIG_FILE" "$TMPDIR/config.yaml.bak"
+            log "Bestehende config.yaml gesichert"
+        fi
+        rm -rf "$INSTALL_DIR"
+        log "Altes Verzeichnis entfernt."
+    else
+        if [ -d "$INSTALL_DIR" ]; then
+            if confirm "'$INSTALL_DIR' existiert bereits. Überschreiben?" "n"; then
+                rm -rf "$INSTALL_DIR"
+                log "Altes Verzeichnis entfernt."
+            else
+                warn "Installation abgebrochen."
+                exit 1
+            fi
         fi
     fi
+
     mkdir -p "$INSTALL_DIR"
     tar -xzf "$TMPDIR/$ARCHIVE_NAME" -C "$INSTALL_DIR"
     if [ -d "$INSTALL_DIR/homuncu-pi" ]; then
@@ -203,6 +262,16 @@ extract_archive() {
         shopt -u dotglob
     fi
     log "Archiv extrahiert nach: ${BOLD}$INSTALL_DIR${NC}"
+
+    if [ "$UPDATE_MODE" = true ] && [ -f "$TMPDIR/config.yaml.bak" ]; then
+        if [ "$CONFIG_CHOICE" = "keep" ]; then
+            mv "$TMPDIR/config.yaml.bak" "$INSTALL_DIR/config.yaml"
+            log "Bestehende config.yaml wiederhergestellt"
+        else
+            rm "$TMPDIR/config.yaml.bak"
+        fi
+    fi
+
     echo -e "  ${BLUE}Dateien:${NC} $(find "$INSTALL_DIR" -maxdepth 1 -type f | wc -l) Dateien, $(find "$INSTALL_DIR" -maxdepth 1 -type d | wc -l) Verzeichnisse"
 }
 
@@ -220,6 +289,11 @@ read_section_value() {
 }
 
 config_wizard() {
+    if [ "$UPDATE_MODE" = true ] && [ "$CONFIG_CHOICE" = "keep" ]; then
+        log "Bestehende Konfiguration wird verwendet."
+        return
+    fi
+
     header "Konfiguration"
 
     local cfg="$INSTALL_DIR/default_config.yaml"
@@ -379,9 +453,15 @@ YAML
 }
 
 print_summary() {
-    header "Installation abgeschlossen!"
-
-    echo -e "${GREEN}Homuncu-Pi wurde erfolgreich installiert!${NC}\n"
+    if [ "$UPDATE_MODE" = true ]; then
+        header "Update abgeschlossen!"
+        echo -e "${GREEN}Homuncu-Pi wurde erfolgreich aktualisiert!${NC}\n"
+        echo -e "${BOLD}Alte Version:${NC}            $LOCAL_VERSION"
+        echo -e "${BOLD}Neue Version:${NC}            $REMOTE_VERSION"
+    else
+        header "Installation abgeschlossen!"
+        echo -e "${GREEN}Homuncu-Pi wurde erfolgreich installiert!${NC}\n"
+    fi
 
     echo -e "${BOLD}Installationsverzeichnis:${NC}  $INSTALL_DIR"
     echo -e "${BOLD}Channel:${NC}                  $CHANNEL ($REMOTE_VERSION)"
@@ -408,8 +488,9 @@ main() {
     get_base_url
     get_channel
     fetch_version
-    download_archive
     get_install_dir
+    check_existing_installation
+    download_archive
     extract_archive
     config_wizard
     print_summary
