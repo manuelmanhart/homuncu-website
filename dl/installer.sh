@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+VERSION=1.0.0-dev
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
@@ -102,7 +103,7 @@ LOGO
 welcome() {
     echo -e "${BOLD}${GREEN}"
     echo "╔══════════════════════════════════════════════════════╗"
-    echo "║        Homuncu-Pi Installation Wizard                ║"
+    echo "║        Homuncu-Pi Installation Wizard v${VERSION}         ║" # a version number is 5 chars long, the variable 10 chars
     echo "║   Your Ghost in a PI - Home Automation Middleware    ║"
     echo "╚══════════════════════════════════════════════════════╝"
     echo -e "${NC}"
