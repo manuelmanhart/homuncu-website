@@ -600,6 +600,33 @@ pre.code code {
   color: var(--green-900);
 }
 
+.code-block {
+  position: relative;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  background: var(--green-500);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.copy-btn:hover {
+  background: var(--green-700);
+}
+
+.copy-btn.copied {
+  background: var(--green-800);
+}
+
 /* ====== Contact ====== */
 
 .contact-links {
