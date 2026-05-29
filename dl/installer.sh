@@ -423,6 +423,7 @@ YAML
     # --- Temperature ---
     echo -e "\n${BOLD}${BLUE}┌─ Temperatursensor (DHT22/AM2302) ───────────────────┐${NC}"
     if confirm "Temperatursensor aktivieren?" "n" TEMP_ACTIVE; then
+        _NEEDS_PIGPIO=true
         _v=$(read_section_value "$cfg" "temperature" "gpioPin");        ask "  GPIO-Pin"               "${_v:-4}"    TEMP_PIN
         _v=$(read_section_value "$cfg" "temperature" "sensorType");     ask "  Sensor-Typ (DHT22/DHT11)" "${_v:-DHT22}" TEMP_TYPE
         _v=$(read_section_value "$cfg" "temperature" "pollInterval");   ask "  Poll-Intervall (Sekunden)" "${_v:-30}"  TEMP_INTERVAL
@@ -439,6 +440,7 @@ YAML
     # --- Binary Sensor ---
     echo -e "\n${BOLD}${BLUE}┌─ Binärsensoren (Reed, PIR) ────────────────────────┐${NC}"
     if confirm "Binärsensoren aktivieren?" "n" BIN_ACTIVE; then
+        _NEEDS_PIGPIO=true
         local sensors_block sensor_tmp="$TMPDIR/binary_sensors.yaml"
         sensors_block=$(sed -n '/^  binarySensor:/,/^  [a-z]/p' "$cfg")
         : > "$sensor_tmp"
@@ -495,6 +497,7 @@ YAML
     fi
 
     if confirm "WS2812B-LED-Streifen aktivieren?" "n" WS2812_ACTIVE; then
+        _NEEDS_PIGPIO=true
         _v=$(read_section_value "$cfg" "ws2812" "gpioPin"); ask "  GPIO-Pin"    "${_v:-18}" WS_PIN
         _v=$(read_section_value "$cfg" "ws2812" "numLeds"); ask "  Anzahl LEDs"  "${_v:-0}"  WS_LEDS
         cat >> "$CONFIG_FILE" <<YAML
@@ -542,6 +545,22 @@ YAML
     fi
 
     log "Konfiguration erstellt: ${BOLD}$CONFIG_FILE${NC}"
+}
+
+setup_pigpio() {
+    local needs_pigpio=false
+    [ "${_NEEDS_PIGPIO:-}" = true ] && needs_pigpio=true
+    grep -qE '^\s+temperature:|^\s+binarySensor:|^\s+ws2812:' "$CONFIG_FILE" 2>/dev/null && needs_pigpio=true
+
+    if [ "$needs_pigpio" = true ]; then
+        header "Pigpio-Unterstützung für GPIO-Dienste wird eingerichtet"
+        log "Installiere pigpio und python3-pigpio..."
+        sudo apt install -y pigpio python3-pigpio
+        log "Aktiviere und starte pigpiod-Dienst..."
+        sudo systemctl enable pigpiod
+        sudo systemctl start pigpiod
+        log "pigpiod ist aktiviert und läuft"
+    fi
 }
 
 print_summary() {
@@ -623,6 +642,7 @@ main() {
     fi
 
     config_wizard
+    setup_pigpio
     print_summary
 }
 
